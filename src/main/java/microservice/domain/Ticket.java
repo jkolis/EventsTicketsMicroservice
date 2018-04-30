@@ -9,7 +9,7 @@ public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO) //TODO
     private long id;
-    private int eventID;
+    private long eventID;
     private String status;
     private String place; //TODO
     private int price;
@@ -23,11 +23,11 @@ public class Ticket {
         this.id = id;
     }
 
-    public int getEventID() {
+    public long getEventID() {
         return eventID;
     }
 
-    public void setEventID(int eventID) {
+    public void setEventID(long eventID) {
         this.eventID = eventID;
     }
 

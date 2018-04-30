@@ -1,13 +1,14 @@
 package microservice.domain;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name="event")
 public class Event {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO) //TODO
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //TODO
     private long id;
     private String name;
     private String eventAddress; //TODO
@@ -15,9 +16,9 @@ public class Event {
     private String artist;
     private int premiumTicketsNumber;
     private int regularTicketsNumber;
-    private String date; //TODO date
+    private Date date;
     private String organizer;
-    private String resignationPeriod; //todo date
+    private int resignationPeriod; //w dniach
     private String status;
 
 
@@ -85,19 +86,19 @@ public class Event {
         this.regularTicketsNumber = regularTicketsNumber;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
-    public String getResignationPeriod() {
+    public int getResignationPeriod() {
         return resignationPeriod;
     }
 
-    public void setResignationPeriod(String resignationPeriod) {
+    public void setResignationPeriod(int resignationPeriod) {
         this.resignationPeriod = resignationPeriod;
     }
 

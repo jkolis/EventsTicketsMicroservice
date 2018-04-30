@@ -1,6 +1,7 @@
 package microservice.service;
 
 import microservice.dao.TicketRepository;
+import microservice.domain.Constants;
 import microservice.domain.Ticket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,8 +10,6 @@ import java.util.List;
 
 @Service
 public class TicketService {
-
-    public static final String AVAILABLE = "available"; //TODO przeniesc do osobnej klasy wszystkie stałe
 
     @Autowired
     TicketRepository ticketRepository;
@@ -29,6 +28,16 @@ public class TicketService {
         ticketRepository.save(ticket);
     }
 
+    //TODO zmienic String
+    public void addTicketsOfType(long eventID, int number, String type) {
+        Ticket t;
+        for (int i = 0; i < number; i++) {
+            t = new Ticket();
+            t.setEventID(eventID);
+            t.setType(type);
+            ticketRepository.save(t);
+        }
+    }
 
     public void updateTicket(Ticket ticket) {
         ticketRepository.save(ticket);
@@ -39,7 +48,7 @@ public class TicketService {
     }
 
     public List<Ticket> showAvailableTickets(int eventID) {
-        return ticketRepository.findAllByEventIDAndStatus(eventID, AVAILABLE);
+        return ticketRepository.findAllByEventIDAndStatus(eventID, Constants.TICKET_AVAILABLE);
     }
 
 }
