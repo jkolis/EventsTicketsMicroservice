@@ -13,7 +13,7 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
-    public void addEvent(Event event) {
+    public void createEvent(Event event) {
         eventRepository.save(event);
         addTickets(event);
     }
