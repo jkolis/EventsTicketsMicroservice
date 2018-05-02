@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class EventService {
@@ -54,10 +52,16 @@ public class EventService {
         return !date.after(currentDate);
     }
 
-    public boolean sendCancelEventReq() {
+    public boolean sendCancelEventReq(long eventid) {
         RestTemplate rt = new RestTemplate();
-        //TODO
-        Response res = rt.getForObject("http://localhost:8181/tickets/test", Response.class);
+        final String uri = "http://localhost:8181/orders/event/delete/" + eventid;
+        Response res = rt.getForObject(uri, Response.class);
         return res.getStatus();
+    }
+
+    public void updateEventStatus(long eventid, String status) {
+        Event e = getEvent(eventid);
+        e.setStatus(status);
+        eventRepository.save(e);
     }
 }

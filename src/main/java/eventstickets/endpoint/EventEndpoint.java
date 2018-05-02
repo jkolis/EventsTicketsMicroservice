@@ -33,7 +33,7 @@ public class EventEndpoint {
         if (event != null) {
             event.setStatus(status);
             eventService.updateEvent(event);
-            return Response.falseStatus();
+            return Response.trueStatus();
         }
         return Response.falseStatus();
     }
@@ -70,7 +70,8 @@ public class EventEndpoint {
     @RequestMapping(method = RequestMethod.DELETE, value = "/{eventid}",
             produces=MediaType.APPLICATION_JSON_VALUE)
     public Response cancelEvent(@PathVariable long eventid) {
-        if(eventService.sendCancelEventReq()) {
+        if(eventService.sendCancelEventReq(eventid)) {
+            eventService.updateEventStatus(eventid, Constants.EVENT_CANCELED);
             return Response.trueStatus();
         }
         return Response.falseStatus();
