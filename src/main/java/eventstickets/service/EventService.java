@@ -1,8 +1,8 @@
-package microservice.service;
+package eventstickets.service;
 
-import microservice.dao.EventRepository;
-import microservice.domain.Event;
-import microservice.endpoint.Response;
+import eventstickets.dao.EventRepository;
+import eventstickets.domain.Event;
+import eventstickets.endpoint.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -57,7 +57,7 @@ public class EventService {
     public boolean sendCancelEventReq() {
         RestTemplate rt = new RestTemplate();
         //TODO
-        Response res = rt.getForObject("http://localhost:8080/tickets/test", Response.class);
+        Response res = rt.getForObject("http://localhost:8181/tickets/test", Response.class);
         return res.getStatus();
     }
 }

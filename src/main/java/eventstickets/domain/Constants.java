@@ -1,4 +1,4 @@
-package microservice.domain;
+package eventstickets.domain;
 
 public class Constants {
 

@@ -1,6 +1,6 @@
-package microservice.dao;
+package eventstickets.dao;
 
-import microservice.domain.Ticket;
+import eventstickets.domain.Ticket;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

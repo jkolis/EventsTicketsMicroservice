@@ -1,4 +1,4 @@
-package microservice.endpoint;
+package eventstickets.endpoint;
 
 public class Response {
 

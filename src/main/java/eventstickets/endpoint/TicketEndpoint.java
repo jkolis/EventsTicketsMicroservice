@@ -1,8 +1,8 @@
-package microservice.endpoint;
+package eventstickets.endpoint;
 
-import microservice.domain.Ticket;
-import microservice.domain.Constants;
-import microservice.service.TicketService;
+import eventstickets.domain.Ticket;
+import eventstickets.domain.Constants;
+import eventstickets.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -17,26 +17,19 @@ public class TicketEndpoint {
     @Autowired
     TicketService ticketService;
 
-    //FU5 - Wyszukiwanie wydarzeń
-    @PostMapping(path = "/showEvents",
-            produces=MediaType.APPLICATION_JSON_VALUE)
-    public void showEvents() {
-        //TODO
-    }
-
     //FU6 - Sprawdzanie dostępności biletów na dane wydarzenie
-    @GetMapping(path = "/showAvailableTickets",
+    @GetMapping(path = "/event/{eventid}/available",
             produces=MediaType.APPLICATION_JSON_VALUE)
-    public List<Ticket> showAvailableTickets(@RequestParam int eventID) {
-        return ticketService.showAvailableTickets(eventID);
+    public List<Ticket> showAvailableTickets(@PathVariable int eventid) {
+        return ticketService.showAvailableTickets(eventid);
     }
 
     //FU7 - Rezerwacja biletów
     //FU9 - Anulowanie rezerwacji zamówień
-    @PostMapping(path = "/updateTicketStatus",
+    @PutMapping(path = "/{ticketid}/status/{status}",
             produces=MediaType.APPLICATION_JSON_VALUE)
-    public Response updateTicketStatus(@RequestParam long id, @RequestParam String status) {
-        Ticket ticket = ticketService.getTicket(id);
+    public Response updateTicketStatus(@PathVariable long ticketid, @PathVariable String status) {
+        Ticket ticket = ticketService.getTicket(ticketid);
         if (ticket != null) {
             ticket.setStatus(status);
             ticketService.updateTicket(ticket);
@@ -46,10 +39,10 @@ public class TicketEndpoint {
     }
 
     //FU11 - Anulowanie wydarzeń
-    @PostMapping(path = "/updateTicketStatusForEvent",
+    @DeleteMapping(path = "/event/{eventid}",
             produces=MediaType.APPLICATION_JSON_VALUE)
-    public Response updateTicketStatusForEvent(@RequestParam int id) {
-        List<Ticket> ticketsToUpdate = ticketService.showTicketsForEvent(id);
+    public Response cancelTicketForEvent(@PathVariable int eventid) {
+        List<Ticket> ticketsToUpdate = ticketService.showTicketsForEvent(eventid);
         for (Ticket t : ticketsToUpdate) {
             t.setStatus(Constants.TICKET_CANCELED);
             ticketService.updateTicket(t);
@@ -58,31 +51,31 @@ public class TicketEndpoint {
     }
 
     //FU12 - Dodawanie dodatkowych biletów do wydarzeń
-    @PostMapping(path = "/addMoreTickets",
+    @PostMapping(path = "/event/{eventid}/{regular},{premium}",
             produces=MediaType.APPLICATION_JSON_VALUE) //TODO co tutaj bedzie w req?
-    public Response addMoreTickets(@RequestBody List<Ticket> tickets) {
-        ticketService.addTickets(tickets);
+    public Response addMoreTickets(@PathVariable long eventid, @PathVariable int regular, @PathVariable int premium) {
+//        ticketService.addTickets(tickets);
         return Response.trueStatus();
     }
 
-    @PostMapping(path = "/addTicket",
+    @PostMapping(path = "/",
             produces=MediaType.APPLICATION_JSON_VALUE)
     public Response addTicket(@RequestBody Ticket ticket) {
         ticketService.addTicket(ticket);
         return Response.trueStatus();
     }
 
-    @PostMapping(path = "/addTicketsOfType",
-            produces=MediaType.APPLICATION_JSON_VALUE)
-    public Response addTicketsOfType (@RequestParam long eventID, @RequestParam int number, @RequestParam String type) {
-        ticketService.addTicketsOfType(eventID, number, type);
-        return Response.trueStatus();
-    }
+//    @PostMapping(path = "/addTicketsOfType",
+//            produces=MediaType.APPLICATION_JSON_VALUE)
+//    public Response addTicketsOfType (@RequestParam long eventID, @RequestParam int number, @RequestParam String type) {
+//        ticketService.addTicketsOfType(eventID, number, type);
+//        return Response.trueStatus();
+//    }
 
-    @GetMapping(path = "/getTicket",
+    @GetMapping(path = "/{ticketid}",
             produces=MediaType.APPLICATION_JSON_VALUE)
-    public Ticket showTicket(@RequestParam long id) {
-        return ticketService.getTicket(id);
+    public Ticket showTicket(@PathVariable long ticketid) {
+        return ticketService.getTicket(ticketid);
     }
 
 //    @GetMapping(path = "/test",

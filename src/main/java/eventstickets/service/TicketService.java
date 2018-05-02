@@ -1,8 +1,8 @@
-package microservice.service;
+package eventstickets.service;
 
-import microservice.dao.TicketRepository;
-import microservice.domain.Constants;
-import microservice.domain.Ticket;
+import eventstickets.dao.TicketRepository;
+import eventstickets.domain.Constants;
+import eventstickets.domain.Ticket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

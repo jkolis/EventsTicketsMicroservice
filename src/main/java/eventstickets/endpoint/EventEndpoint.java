@@ -1,8 +1,8 @@
-package microservice.endpoint;
+package eventstickets.endpoint;
 
-import microservice.domain.Constants;
-import microservice.domain.Event;
-import microservice.service.EventService;
+import eventstickets.domain.Constants;
+import eventstickets.domain.Event;
+import eventstickets.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,7 @@ public class EventEndpoint {
     EventService eventService;
 
     //FU10 - Dodawanie wydarzeń
-    @PostMapping(path = "/createEventAndTickets",
+    @PostMapping(path = "/",
             produces=MediaType.APPLICATION_JSON_VALUE)
     public Response createEventAndTickets(@RequestBody Event event) {
         eventService.createEvent(event);
@@ -26,10 +26,10 @@ public class EventEndpoint {
     }
 
     //FU11 - Anulowanie wydarzeń
-    @PostMapping(path = "/updateEventStatus",
+    @PutMapping(path = "/{eventid}/status/{status}",
             produces=MediaType.APPLICATION_JSON_VALUE)
-    public Response updateEventStatus(@RequestParam long id, @RequestParam String status) {
-        Event event = eventService.getEvent(id);
+    public Response updateEventStatus(@PathVariable long eventid, @PathVariable String status) {
+        Event event = eventService.getEvent(eventid);
         if (event != null) {
             event.setStatus(status);
             eventService.updateEvent(event);
@@ -38,29 +38,38 @@ public class EventEndpoint {
         return Response.falseStatus();
     }
 
-    //FU12 - Dodawanie dodatkowych biletów do wydarzeń
-    @GetMapping(path = "/showEventInfo",
+    //FU5 - Wyszukiwanie wydarzeń
+    @GetMapping(path = "/show",
             produces=MediaType.APPLICATION_JSON_VALUE)
-    public Event showEventInfo(@RequestParam long id) {
-        return eventService.getEvent(id);
+    public void showEvents(@RequestBody Event event) {
+        //TODO
+    }
+
+    //FU12 - Dodawanie dodatkowych biletów do wydarzeń
+    @RequestMapping(method = RequestMethod.GET, value = "/{eventid}",
+            produces=MediaType.APPLICATION_JSON_VALUE)
+    public Event showEventInfo(@PathVariable long eventid) {
+        return eventService.getEvent(eventid);
     }
 
     //FU9 - Anulowanie rezerwacji zamówień
-    @GetMapping(path = "/checkResignationTime")
-    public boolean checkResignationTime(@RequestParam long id) {
-        return eventService.checkResignation(id);
+    @GetMapping(path = "/resigantion/{eventid}")
+    public boolean checkResignationTime(@PathVariable long eventid) {
+        return eventService.checkResignation(eventid);
     }
 
     //FU11 - Anulowanie wydarzeń
     //FU12 - Dodawanie dodatkowych biletów do wydarzeń
-    @GetMapping(path = "/showEventsCreatedByUser")
-    public List<Event> showEventsCreatedByUser(@RequestParam String user) {
-        return eventService.showUserEvents(user);
+    @GetMapping(path = "/user/{userid}",
+            produces=MediaType.APPLICATION_JSON_VALUE)
+    public List<Event> showEventsCreatedByUser(@PathVariable String userid) {
+        return eventService.showUserEvents(userid);
     }
 
-    @GetMapping(path = "/cancelEvent",
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{eventid}",
             produces=MediaType.APPLICATION_JSON_VALUE)
-    public Response cancelEvent(@RequestParam long id) {
+    public Response cancelEvent(@PathVariable long eventid) {
         if(eventService.sendCancelEventReq()) {
             return Response.trueStatus();
         }
@@ -68,10 +77,10 @@ public class EventEndpoint {
     }
 
     //FU12
-    @GetMapping(path = "/showAvailableSeatsNumber",
+    @GetMapping(path = "/seats/{eventid}",
             produces=MediaType.APPLICATION_JSON_VALUE)
-    public int showAvailableSeatsNumber(@RequestParam long eventID) {
-        Event event = eventService.getEvent(eventID);
+    public int showAvailableSeatsNumber(@PathVariable long eventid) {
+        Event event = eventService.getEvent(eventid);
         int occupiedSeats = event.getPremiumTicketsNumber() + event.getRegularTicketsNumber();
         return Constants.MAX_SEATS - occupiedSeats;
     }
