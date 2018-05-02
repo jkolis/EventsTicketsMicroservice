@@ -26,7 +26,7 @@ public class EventEndpoint {
     }
 
     //FU11 - Anulowanie wydarzeń
-    @PutMapping(path = "/{eventid}/status/{status}",
+    @RequestMapping(method = RequestMethod.POST, value = "/{eventid}/status/{status}",
             produces=MediaType.APPLICATION_JSON_VALUE)
     public Response updateEventStatus(@PathVariable long eventid, @PathVariable String status) {
         Event event = eventService.getEvent(eventid);

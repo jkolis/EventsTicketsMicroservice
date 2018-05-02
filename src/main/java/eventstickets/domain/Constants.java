@@ -9,4 +9,6 @@ public class Constants {
     public static final String EVENT_CANCELED = "CANCELED";
 
     public static final int MAX_SEATS = 100;
+
+    public static final String ORDERS_URI = "http://rso-mf.westeurope.cloudapp.azure.com";
 }

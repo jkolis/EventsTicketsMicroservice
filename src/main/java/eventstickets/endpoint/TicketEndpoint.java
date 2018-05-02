@@ -26,7 +26,7 @@ public class TicketEndpoint {
 
     //FU7 - Rezerwacja biletów
     //FU9 - Anulowanie rezerwacji zamówień
-    @PutMapping(path = "/{ticketid}/status/{status}",
+    @RequestMapping(method = RequestMethod.POST, value = "/{ticketid}/status/{status}",
             produces=MediaType.APPLICATION_JSON_VALUE)
     public Response updateTicketStatus(@PathVariable long ticketid, @PathVariable String status) {
         Ticket ticket = ticketService.getTicket(ticketid);

@@ -1,6 +1,7 @@
 package eventstickets.service;
 
 import eventstickets.dao.EventRepository;
+import eventstickets.domain.Constants;
 import eventstickets.domain.Event;
 import eventstickets.endpoint.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class EventService {
 
     public boolean sendCancelEventReq(long eventid) {
         RestTemplate rt = new RestTemplate();
-        final String uri = "http://localhost:8181/orders/event/delete/" + eventid;
+        final String uri = Constants.ORDERS_URI + "/orders/event/delete/" + eventid;
         Response res = rt.getForObject(uri, Response.class);
         return res.getStatus();
     }
