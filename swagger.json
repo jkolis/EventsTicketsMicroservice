@@ -167,20 +167,67 @@
                 "produces": [
                     "application/json"
                 ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Event"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/events/status/{eventid}": {
+            "post": {
+                "tags": [
+                    "event-endpoint"
+                ],
+                "summary": "updateEventStatus",
+                "operationId": "updateEventStatusUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "parameters": [
                     {
-                        "in": "body",
-                        "name": "event",
-                        "description": "event",
+                        "name": "eventid",
+                        "in": "path",
+                        "description": "eventid",
                         "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/Event"
-                        }
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "status",
+                        "required": true,
+                        "type": "string"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Response"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -320,13 +367,13 @@
                 }
             }
         },
-        "/events/{eventid}/status/{status}": {
-            "put": {
+        "/tickets/": {
+            "post": {
                 "tags": [
-                    "event-endpoint"
+                    "ticket-endpoint"
                 ],
-                "summary": "updateEventStatus",
-                "operationId": "updateEventStatusUsingPUT",
+                "summary": "addTicket",
+                "operationId": "addTicketUsingPOST",
                 "consumes": [
                     "application/json"
                 ],
@@ -335,19 +382,13 @@
                 ],
                 "parameters": [
                     {
-                        "name": "eventid",
-                        "in": "path",
-                        "description": "eventid",
+                        "in": "body",
+                        "name": "ticket",
+                        "description": "ticket",
                         "required": true,
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    {
-                        "name": "status",
-                        "in": "path",
-                        "description": "status",
-                        "required": true,
-                        "type": "string"
+                        "schema": {
+                            "$ref": "#/definitions/Ticket"
+                        }
                     }
                 ],
                 "responses": {
@@ -372,13 +413,13 @@
                 }
             }
         },
-        "/tickets/": {
+        "/tickets/add/event/{eventid}": {
             "post": {
                 "tags": [
                     "ticket-endpoint"
                 ],
-                "summary": "addTicket",
-                "operationId": "addTicketUsingPOST",
+                "summary": "addMoreTickets",
+                "operationId": "addMoreTicketsUsingPOST",
                 "consumes": [
                     "application/json"
                 ],
@@ -387,13 +428,28 @@
                 ],
                 "parameters": [
                     {
-                        "in": "body",
-                        "name": "ticket",
-                        "description": "ticket",
+                        "name": "eventid",
+                        "in": "path",
+                        "description": "eventid",
                         "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/Ticket"
-                        }
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "regular",
+                        "in": "query",
+                        "description": "regular",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "premium",
+                        "in": "query",
+                        "description": "premium",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
                     }
                 ],
                 "responses": {
@@ -505,13 +561,13 @@
                 }
             }
         },
-        "/tickets/event/{eventid}/{regular},{premium}": {
+        "/tickets/status/": {
             "post": {
                 "tags": [
                     "ticket-endpoint"
                 ],
-                "summary": "addMoreTickets",
-                "operationId": "addMoreTicketsUsingPOST",
+                "summary": "updateTicketStatus",
+                "operationId": "updateTicketStatusUsingPOST",
                 "consumes": [
                     "application/json"
                 ],
@@ -520,28 +576,19 @@
                 ],
                 "parameters": [
                     {
-                        "name": "eventid",
-                        "in": "path",
-                        "description": "eventid",
+                        "name": "ticketid",
+                        "in": "query",
+                        "description": "ticketid",
                         "required": true,
                         "type": "integer",
                         "format": "int64"
                     },
                     {
-                        "name": "regular",
-                        "in": "path",
-                        "description": "regular",
+                        "name": "status",
+                        "in": "query",
+                        "description": "status",
                         "required": true,
-                        "type": "integer",
-                        "format": "int32"
-                    },
-                    {
-                        "name": "premium",
-                        "in": "path",
-                        "description": "premium",
-                        "required": true,
-                        "type": "integer",
-                        "format": "int32"
+                        "type": "string"
                     }
                 ],
                 "responses": {
@@ -595,58 +642,6 @@
                         "schema": {
                             "$ref": "#/definitions/Ticket"
                         }
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    }
-                }
-            }
-        },
-        "/tickets/{ticketid}/status/{status}": {
-            "put": {
-                "tags": [
-                    "ticket-endpoint"
-                ],
-                "summary": "updateTicketStatus",
-                "operationId": "updateTicketStatusUsingPUT",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "ticketid",
-                        "in": "path",
-                        "description": "ticketid",
-                        "required": true,
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    {
-                        "name": "status",
-                        "in": "path",
-                        "description": "status",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/Response"
-                        }
-                    },
-                    "201": {
-                        "description": "Created"
                     },
                     "401": {
                         "description": "Unauthorized"

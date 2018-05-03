@@ -65,4 +65,8 @@ public class EventService {
         e.setStatus(status);
         eventRepository.save(e);
     }
+
+    public List<Event> showEvents() {
+        return eventRepository.findAll();
+    }
 }

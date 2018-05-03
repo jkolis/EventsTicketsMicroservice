@@ -26,9 +26,9 @@ public class TicketEndpoint {
 
     //FU7 - Rezerwacja biletów
     //FU9 - Anulowanie rezerwacji zamówień
-    @RequestMapping(method = RequestMethod.POST, value = "/{ticketid}/status/{status}",
+    @RequestMapping(method = RequestMethod.POST, value = "/status/",
             produces=MediaType.APPLICATION_JSON_VALUE)
-    public Response updateTicketStatus(@PathVariable long ticketid, @PathVariable String status) {
+    public Response updateTicketStatus(@RequestParam long ticketid, @RequestParam String status) {
         Ticket ticket = ticketService.getTicket(ticketid);
         if (ticket != null) {
             ticket.setStatus(status);
@@ -51,9 +51,9 @@ public class TicketEndpoint {
     }
 
     //FU12 - Dodawanie dodatkowych biletów do wydarzeń
-    @PostMapping(path = "/event/{eventid}/{regular},{premium}",
+    @PostMapping(path = "add/event/{eventid}",
             produces=MediaType.APPLICATION_JSON_VALUE) //TODO co tutaj bedzie w req?
-    public Response addMoreTickets(@PathVariable long eventid, @PathVariable int regular, @PathVariable int premium) {
+    public Response addMoreTickets(@PathVariable long eventid, @RequestParam int regular, @RequestParam int premium) {
 //        ticketService.addTickets(tickets);
         return Response.trueStatus();
     }

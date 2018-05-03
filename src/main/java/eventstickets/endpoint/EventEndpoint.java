@@ -26,9 +26,9 @@ public class EventEndpoint {
     }
 
     //FU11 - Anulowanie wydarzeń
-    @RequestMapping(method = RequestMethod.POST, value = "/{eventid}/status/{status}",
+    @RequestMapping(method = RequestMethod.POST, value = "/status/{eventid}",
             produces=MediaType.APPLICATION_JSON_VALUE)
-    public Response updateEventStatus(@PathVariable long eventid, @PathVariable String status) {
+    public Response updateEventStatus(@PathVariable long eventid, @RequestParam String status) {
         Event event = eventService.getEvent(eventid);
         if (event != null) {
             event.setStatus(status);
@@ -41,8 +41,8 @@ public class EventEndpoint {
     //FU5 - Wyszukiwanie wydarzeń
     @GetMapping(path = "/show",
             produces=MediaType.APPLICATION_JSON_VALUE)
-    public void showEvents(@RequestBody Event event) {
-        //TODO
+    public List<Event> showEvents() {
+        return eventService.showEvents();
     }
 
     //FU12 - Dodawanie dodatkowych biletów do wydarzeń
