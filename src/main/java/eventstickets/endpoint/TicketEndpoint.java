@@ -38,6 +38,12 @@ public class TicketEndpoint {
         return Response.falseStatus();
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/event/{eventid}",
+            produces=MediaType.APPLICATION_JSON_VALUE)
+    public List<Ticket> showTicketsForEvent(@PathVariable long eventid) {
+        return ticketService.showTicketsForEvent(eventid);
+    }
+
     //FU11 - Anulowanie wydarzeń
     @DeleteMapping(path = "/event/{eventid}",
             produces=MediaType.APPLICATION_JSON_VALUE)

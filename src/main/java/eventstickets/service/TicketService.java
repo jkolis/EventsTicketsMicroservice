@@ -43,11 +43,11 @@ public class TicketService {
         ticketRepository.save(ticket);
     }
 
-    public List<Ticket> showTicketsForEvent(int eventID) {
+    public List<Ticket> showTicketsForEvent(long eventID) {
         return ticketRepository.findAllByEventID(eventID);
     }
 
-    public List<Ticket> showAvailableTickets(int eventID) {
+    public List<Ticket> showAvailableTickets(long eventID) {
         return ticketRepository.findAllByEventIDAndStatus(eventID, Constants.TICKET_AVAILABLE);
     }
 
