@@ -18,7 +18,8 @@ public class TicketEndpoint {
     TicketService ticketService;
 
     //FU6 - Sprawdzanie dostępności biletów na dane wydarzenie
-    @GetMapping(path = "/event/{eventid}/available",
+    @RequestMapping(method = RequestMethod.GET,
+            value = "/event/{eventid}/available",
             produces=MediaType.APPLICATION_JSON_VALUE)
     public List<Ticket> showAvailableTickets(@PathVariable int eventid) {
         return ticketService.showAvailableTickets(eventid);
@@ -26,7 +27,10 @@ public class TicketEndpoint {
 
     //FU7 - Rezerwacja biletów
     //FU9 - Anulowanie rezerwacji zamówień
-    @RequestMapping(method = RequestMethod.POST, value = "/status/",
+    @RequestMapping(method = RequestMethod.POST,
+            value = "/status/",
+            consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+                    MediaType.APPLICATION_JSON_VALUE},
             produces=MediaType.APPLICATION_JSON_VALUE)
     public Response updateTicketStatus(@RequestParam long ticketid, @RequestParam String status) {
         Ticket ticket = ticketService.getTicket(ticketid);
@@ -38,14 +42,16 @@ public class TicketEndpoint {
         return Response.falseStatus();
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/event/{eventid}",
+    @RequestMapping(method = RequestMethod.GET,
+            value = "/event/{eventid}",
             produces=MediaType.APPLICATION_JSON_VALUE)
     public List<Ticket> showTicketsForEvent(@PathVariable long eventid) {
         return ticketService.showTicketsForEvent(eventid);
     }
 
     //FU11 - Anulowanie wydarzeń
-    @DeleteMapping(path = "/event/{eventid}",
+    @RequestMapping(method = RequestMethod.DELETE,
+            value = "/event/{eventid}",
             produces=MediaType.APPLICATION_JSON_VALUE)
     public Response cancelTicketForEvent(@PathVariable int eventid) {
         List<Ticket> ticketsToUpdate = ticketService.showTicketsForEvent(eventid);
@@ -57,16 +63,22 @@ public class TicketEndpoint {
     }
 
     //FU12 - Dodawanie dodatkowych biletów do wydarzeń
-    @PostMapping(path = "add/event/{eventid}",
+    @RequestMapping(method = RequestMethod.POST,
+            value = "add/event/{eventid}",
+            consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+                    MediaType.APPLICATION_JSON_VALUE},
             produces=MediaType.APPLICATION_JSON_VALUE) //TODO co tutaj bedzie w req?
     public Response addMoreTickets(@PathVariable long eventid, @RequestParam int regular, @RequestParam int premium) {
 //        ticketService.addTickets(tickets);
         return Response.trueStatus();
     }
 
-    @PostMapping(path = "/",
+    @RequestMapping(method = RequestMethod.POST,
+            value = "/",
+            consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+                    MediaType.APPLICATION_JSON_VALUE},
             produces=MediaType.APPLICATION_JSON_VALUE)
-    public Response addTicket(@RequestBody Ticket ticket) {
+    public Response addTicket(Ticket ticket) {
         ticketService.addTicket(ticket);
         return Response.trueStatus();
     }
@@ -78,7 +90,8 @@ public class TicketEndpoint {
 //        return Response.trueStatus();
 //    }
 
-    @GetMapping(path = "/{ticketid}",
+    @RequestMapping(method = RequestMethod.GET,
+            value = "/{ticketid}",
             produces=MediaType.APPLICATION_JSON_VALUE)
     public Ticket showTicket(@PathVariable long ticketid) {
         return ticketService.getTicket(ticketid);

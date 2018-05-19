@@ -17,17 +17,23 @@ public class EventEndpoint {
     EventService eventService;
 
     //FU10 - Dodawanie wydarzeń
-    @PostMapping(path = "/",
-            produces=MediaType.APPLICATION_JSON_VALUE)
-    public Response createEventAndTickets(@RequestBody Event event) {
+    @RequestMapping(method = RequestMethod.POST,
+            value = "/",
+            consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+                    MediaType.APPLICATION_JSON_VALUE},
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response createEventAndTickets(Event event) {
         eventService.createEvent(event);
         eventService.addTickets(event);
         return Response.trueStatus();
     }
 
     //FU11 - Anulowanie wydarzeń
-    @RequestMapping(method = RequestMethod.POST, value = "/status/{eventid}",
-            produces=MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.POST,
+            value = "/status/{eventid}",
+            consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+                    MediaType.APPLICATION_JSON_VALUE},
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public Response updateEventStatus(@PathVariable long eventid, @RequestParam String status) {
         Event event = eventService.getEvent(eventid);
         if (event != null) {
@@ -39,38 +45,46 @@ public class EventEndpoint {
     }
 
     //FU5 - Wyszukiwanie wydarzeń
-    @GetMapping(path = "/show",
-            produces=MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET,
+            value = "/show",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Event> showEvents() {
         return eventService.showEvents();
     }
 
     //FU12 - Dodawanie dodatkowych biletów do wydarzeń
-    @RequestMapping(method = RequestMethod.GET, value = "/{eventid}",
-            produces=MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET,
+            value = "/{eventid}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public Event showEventInfo(@PathVariable long eventid) {
         return eventService.getEvent(eventid);
     }
 
     //FU9 - Anulowanie rezerwacji zamówień
-    @GetMapping(path = "/resigantion/{eventid}")
+    @RequestMapping(method = RequestMethod.GET,
+            value = "/resigantion/{eventid}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean checkResignationTime(@PathVariable long eventid) {
         return eventService.checkResignation(eventid);
     }
 
     //FU11 - Anulowanie wydarzeń
     //FU12 - Dodawanie dodatkowych biletów do wydarzeń
-    @GetMapping(path = "/user/{userid}",
-            produces=MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.POST,
+            value = "/user/{userid}",
+            consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+                    MediaType.APPLICATION_JSON_VALUE},
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Event> showEventsCreatedByUser(@PathVariable String userid) {
         return eventService.showUserEvents(userid);
     }
 
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{eventid}",
-            produces=MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.DELETE,
+            value = "/{eventid}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public Response cancelEvent(@PathVariable long eventid) {
-        if(eventService.sendCancelEventReq(eventid)) {
+        if (eventService.sendCancelEventReq(eventid)) {
             eventService.updateEventStatus(eventid, Constants.EVENT_CANCELED);
             return Response.trueStatus();
         }
@@ -78,8 +92,9 @@ public class EventEndpoint {
     }
 
     //FU12
-    @GetMapping(path = "/seats/{eventid}",
-            produces=MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET,
+            value = "/seats/{eventid}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public int showAvailableSeatsNumber(@PathVariable long eventid) {
         Event event = eventService.getEvent(eventid);
         int occupiedSeats = event.getPremiumTicketsNumber() + event.getRegularTicketsNumber();

@@ -1,6 +1,9 @@
 package eventstickets.domain;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -16,7 +19,8 @@ public class Event {
     private String artist;
     private int premiumTicketsNumber;
     private int regularTicketsNumber;
-    private Date date;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime date;
     private String organizer;
     private int resignationPeriod; //w dniach
     private String status;
@@ -86,11 +90,11 @@ public class Event {
         this.regularTicketsNumber = regularTicketsNumber;
     }
 
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
