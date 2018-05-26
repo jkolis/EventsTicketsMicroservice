@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -99,6 +100,12 @@ public class EventEndpoint {
         Event event = eventService.getEvent(eventid);
         int occupiedSeats = event.getPremiumTicketsNumber() + event.getRegularTicketsNumber();
         return Constants.MAX_SEATS - occupiedSeats;
+    }
+
+    @RequestMapping(method = RequestMethod.GET,
+    value = "/token-expired")
+    public void tokenExpired() {
+        //TODO
     }
 
 //    @GetMapping(path = "/getTicket",

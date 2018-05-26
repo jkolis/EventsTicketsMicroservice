@@ -10,5 +10,8 @@ public class Constants {
 
     public static final int MAX_SEATS = 100;
 
-    public static final String ORDERS_URI = "http://rso-mf.westeurope.cloudapp.azure.com";
+    public static final String ORDERS_URI = "http://rso-mf.westeurope.cloudapp.azure.com:8181";
+    public static final String TOKEN_PAYLOAD_EXP_DATE = "expirationDate";
+    public static final String TOKEN_PAYLOAD_PERMISSION = "permissionId";
+    public static final String TOKEN_PAYLOAD_USER = "userId";
 }
