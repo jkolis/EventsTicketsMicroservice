@@ -1,0 +1,12 @@
+100 - OK
+101 - nie ma wydarzenia z takim ID
+102 - token stracił ważność
+103 - nieprawidłowy podpis tokena
+104 - brak uprawnien (nieprawidłowy userID)
+105 - nie ma biletu z takim ID
+106 - wydarzenie odwołane
+107 - czas rezygnacji minął
+108 - użytkownik nie ma żadnych wydarzeń
+109 - bilet był już zarezerwowany
+110 - bilet był już wolny
+111 - bilet niedostępny (anulowany)

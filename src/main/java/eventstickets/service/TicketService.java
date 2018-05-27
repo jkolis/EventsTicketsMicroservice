@@ -13,6 +13,8 @@ public class TicketService {
 
     @Autowired
     TicketRepository ticketRepository;
+    @Autowired
+    EventService eventService;
 
     public Ticket getTicket(long id) {
         return ticketRepository.findTicketById(id);
@@ -22,6 +24,22 @@ public class TicketService {
         for (Ticket t : tickets) {
             ticketRepository.save(t);
         }
+    }
+
+    public void addTicketsToEvent(long eventID, int regular, int premium) {
+        for (int i = 0; i < regular; i++) {
+            Ticket t = new Ticket();
+            t.setEventID(eventID);
+            t.setType(Constants.TICKET_REGULAR);
+            ticketRepository.save(t);
+        }
+        for (int i = 0; i < premium; i++) {
+            Ticket t = new Ticket();
+            t.setEventID(eventID);
+            t.setType(Constants.TICKET_PREMIUM);
+            ticketRepository.save(t);
+        }
+
     }
 
     public void addTicket(Ticket ticket) {
@@ -43,12 +61,24 @@ public class TicketService {
         ticketRepository.save(ticket);
     }
 
+    public void cancelTicketsForEvent(long eventID) {
+        List<Ticket> tickets = ticketRepository.findAllByEventID(eventID);
+        for (Ticket t : tickets) {
+            t.setStatus(Constants.TICKET_CANCELED);
+            ticketRepository.save(t);
+        }
+    }
+
     public List<Ticket> showTicketsForEvent(long eventID) {
         return ticketRepository.findAllByEventID(eventID);
     }
 
     public List<Ticket> showAvailableTickets(long eventID) {
         return ticketRepository.findAllByEventIDAndStatus(eventID, Constants.TICKET_AVAILABLE);
+    }
+
+    public boolean doesEventExist(long eventID) {
+        return (eventService.getEvent(eventID) != null);
     }
 
 }

@@ -64,6 +64,7 @@ public class EventService {
         Event e = getEvent(eventid);
         e.setStatus(status);
         eventRepository.save(e);
+        ticketService.cancelTicketsForEvent(eventid);
     }
 
     public List<Event> showEvents() {

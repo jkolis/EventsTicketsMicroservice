@@ -2,14 +2,14 @@ package eventstickets.endpoint;
 
 import org.springframework.http.HttpStatus;
 
-public class ResponseErrorHandler {
+public class ResponseErrorHandler <T>{
 
-    public HttpStatus statusCode;
-    public String result;
+    public int statusCode;
+    public T result;
     public boolean success;
     public ErrorContainer errorContainer;
 
-    public ResponseErrorHandler(HttpStatus statusCode, String result, boolean success, int code,
+    public ResponseErrorHandler(int statusCode, T result, boolean success, int code,
                                 String message, String details, String url) {
         this.statusCode = statusCode;
         this.result = result;
