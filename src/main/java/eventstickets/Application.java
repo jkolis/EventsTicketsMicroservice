@@ -115,7 +115,8 @@ public class Application implements Filter {
                 request.setAttribute(Constants.TOKEN_PAYLOAD_USER, user);
 
             } catch (final io.jsonwebtoken.SignatureException e) {
-                throw new ServletException(e.getMessage());
+//                throw new ServletException(e.getMessage());
+                request.getRequestDispatcher("/events/token-not-valid").forward(request, response);
             }
         }
 

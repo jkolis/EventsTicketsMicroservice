@@ -30,12 +30,14 @@ public class TicketService {
         for (int i = 0; i < regular; i++) {
             Ticket t = new Ticket();
             t.setEventID(eventID);
+            t.setStatus(Constants.TICKET_AVAILABLE);
             t.setType(Constants.TICKET_REGULAR);
             ticketRepository.save(t);
         }
         for (int i = 0; i < premium; i++) {
             Ticket t = new Ticket();
             t.setEventID(eventID);
+            t.setStatus(Constants.TICKET_AVAILABLE);
             t.setType(Constants.TICKET_PREMIUM);
             ticketRepository.save(t);
         }
@@ -52,6 +54,7 @@ public class TicketService {
         for (int i = 0; i < number; i++) {
             t = new Ticket();
             t.setEventID(eventID);
+            t.setStatus(Constants.TICKET_AVAILABLE);
             t.setType(type);
             ticketRepository.save(t);
         }

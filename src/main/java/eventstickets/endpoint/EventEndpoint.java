@@ -1,8 +1,6 @@
 package eventstickets.endpoint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import eventstickets.domain.Constants;
 import eventstickets.domain.Event;
 import eventstickets.service.EventService;
@@ -27,10 +25,11 @@ public class EventEndpoint {
             consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE,
                     MediaType.APPLICATION_JSON_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response createEventAndTickets(Event event) {
+    public JsonErrorResponses createEventAndTickets(Event event) {
         eventService.createEvent(event);
         eventService.addTickets(event);
-        return Response.trueStatus();
+        return new JsonErrorResponses<>(HttpStatus.OK.value(), "", true, 100,
+                "Event created", "Event " + event.getId() + " has been created", Constants.URL);
     }
 
     //FU11 - Anulowanie wydarzeń
@@ -39,37 +38,39 @@ public class EventEndpoint {
             consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE,
                     MediaType.APPLICATION_JSON_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response updateEventStatus(@PathVariable long eventid, @RequestParam String status) {
+    public JsonErrorResponses updateEventStatus(@PathVariable long eventid, @RequestParam String status) {
         Event event = eventService.getEvent(eventid);
         if (event != null) {
             event.setStatus(status);
             eventService.updateEvent(event);
-            return Response.trueStatus();
+            return new JsonErrorResponses<>(HttpStatus.OK.value(), "", true, 100,
+                    "Event status updated", "Event's " + eventid + " status updated to " + status, Constants.URL);
         }
-        return Response.falseStatus();
+        return new JsonErrorResponses<>(HttpStatus.NOT_FOUND.value(), "", false,  101,
+                "No such event", "Event with id " + eventid + " doesn't exist", Constants.URL);
     }
 
     //FU5 - Wyszukiwanie wydarzeń
     @RequestMapping(method = RequestMethod.GET,
             value = "/show",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseErrorHandler showEvents() throws JsonProcessingException {
+    public JsonErrorResponses showEvents() throws JsonProcessingException {
         List<Event> events = eventService.showEvents();
-        return new ResponseErrorHandler<>(HttpStatus.OK.value(), events, true, 0,
-                "Events", "All events", "http://kolis.pl");
+        return new JsonErrorResponses<>(HttpStatus.OK.value(), events, true, 100,
+                "Events", "All events", Constants.URL);
     }
 
     //FU12 - Dodawanie dodatkowych biletów do wydarzeń
     @RequestMapping(method = RequestMethod.GET,
             value = "/{eventid}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseErrorHandler showEventInfo(@PathVariable long eventid) throws JsonProcessingException {
+    public JsonErrorResponses showEventInfo(@PathVariable long eventid) throws JsonProcessingException {
         Event event = eventService.getEvent(eventid);
         if (event == null) {
-            return new ResponseErrorHandler<>(HttpStatus.NOT_FOUND.value(), "", false,  101,
+            return new JsonErrorResponses<>(HttpStatus.NOT_FOUND.value(), "", false,  101,
                     "No such event", "Event with id " + eventid + " doesn't exist", Constants.URL);
         }
-        return new ResponseErrorHandler<>(HttpStatus.OK.value(), event, true, 0,
+        return new JsonErrorResponses<>(HttpStatus.OK.value(), event, true, 0,
                 "Events", "All events", Constants.URL);
     }
 
@@ -77,17 +78,17 @@ public class EventEndpoint {
     @RequestMapping(method = RequestMethod.GET,
             value = "/resignation/{eventid}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseErrorHandler checkResignationTime(@PathVariable long eventid) {
+    public JsonErrorResponses checkResignationTime(@PathVariable long eventid) {
         Event event = eventService.getEvent(eventid);
         if (event == null) {
-            return new ResponseErrorHandler<>(HttpStatus.NOT_FOUND.value(), "", false,  101,
+            return new JsonErrorResponses<>(HttpStatus.NOT_FOUND.value(), "", false,  101,
                     "No such event", "Event with id " + eventid + " doesn't exist", Constants.URL);
         }
         boolean result = eventService.checkResignation(eventid);
         if (result)
-        return new ResponseErrorHandler<>(200, "", true, 100, "Can resign",
+        return new JsonErrorResponses<>(200, "", true, 100, "Can resign",
                 "You still can resign from this event", Constants.URL);
-        return new ResponseErrorHandler<>(200, "", false, 107, "You can't resign",
+        return new JsonErrorResponses<>(200, "", false, 107, "You can't resign",
                 "Resignation time for this event has expired", Constants.URL);
     }
 
@@ -98,14 +99,14 @@ public class EventEndpoint {
             consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE,
                     MediaType.APPLICATION_JSON_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseErrorHandler showEventsCreatedByUser(@PathVariable String userid, HttpServletRequest httpServletRequest) {
+    public JsonErrorResponses showEventsCreatedByUser(@PathVariable String userid, HttpServletRequest httpServletRequest) {
         //TODO tylko on sam moze zobaczyc swoje eventy?
         List<Event> userEvents = eventService.showUserEvents(userid);
         if (userEvents == null) {
-            return new ResponseErrorHandler<>(404, "", false, 108, "No events",
+            return new JsonErrorResponses<>(404, "", false, 108, "No events",
                     "This user doesn't have eny events", Constants.URL);
         }
-        return new ResponseErrorHandler<>(200, userEvents, true, 100, "User events",
+        return new JsonErrorResponses<>(200, userEvents, true, 100, "User events",
                 "User " + userid + " has created these events", Constants.URL);
     }
 
@@ -113,45 +114,52 @@ public class EventEndpoint {
     @RequestMapping(method = RequestMethod.DELETE,
             value = "/{eventid}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseErrorHandler cancelEvent(@PathVariable long eventid, HttpServletRequest httpServletRequest) {
+    public JsonErrorResponses cancelEvent(@PathVariable long eventid, HttpServletRequest httpServletRequest) {
         Event event = eventService.getEvent(eventid);
         if (event == null) {
-            return new ResponseErrorHandler<>(HttpStatus.NOT_FOUND.value(), "", false,  101,
+            return new JsonErrorResponses<>(HttpStatus.NOT_FOUND.value(), "", false,  101,
                     "No such event", "Event with id " + eventid + " doesn't exist", Constants.URL);
         }
         //id z tokena nie rowna sie organizatorowi
-        if (!httpServletRequest.getAttribute(Constants.TOKEN_PAYLOAD_USER).equals(event.getOrganizer())) {
-//            return new ResponseErrorHandler<>()
-        }
+//        if (!httpServletRequest.getAttribute(Constants.TOKEN_PAYLOAD_USER).equals(event.getOrganizer())) {
+////            return new JsonErrorResponses<>()
+//        }
         if (eventService.sendCancelEventReq(eventid)) {
             eventService.updateEventStatus(eventid, Constants.EVENT_CANCELED);
-            return new ResponseErrorHandler<>(200, "", true, 100, "Event cancelled",
+            return new JsonErrorResponses<>(200, "", true, 100, "Event cancelled",
                     "Event " + eventid + " + has been cancelled", Constants.URL);
         }
-        return new ResponseErrorHandler<>(400, "", false, 100, "", "", Constants.URL);//TODO
+        return new JsonErrorResponses<>(400, "", false, 100, "", "", Constants.URL);//TODO
     }
 
     //FU12
     @RequestMapping(method = RequestMethod.GET,
             value = "/seats/{eventid}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseErrorHandler showAvailableSeatsNumber(@PathVariable long eventid) {
+    public JsonErrorResponses showAvailableSeatsNumber(@PathVariable long eventid) {
         Event event = eventService.getEvent(eventid);
         if (event == null) {
-            return new ResponseErrorHandler<>(HttpStatus.NOT_FOUND.value(), "", false,  101,
+            return new JsonErrorResponses<>(HttpStatus.NOT_FOUND.value(), "", false,  101,
                     "No such event", "Event with id " + eventid + " doesn't exist", Constants.URL);
         }
         int occupiedSeats = event.getPremiumTicketsNumber() + event.getRegularTicketsNumber();
         int availableSeats = Constants.MAX_SEATS - occupiedSeats;
-        return new ResponseErrorHandler<>(200, availableSeats, true, 100, "Available seats",
+        return new JsonErrorResponses<>(200, availableSeats, true, 100, "Available seats",
                 "available seats in event: " + eventid, Constants.URL);
     }
 
     @RequestMapping(method = RequestMethod.GET,
     value = "/token-expired")
-    public ResponseErrorHandler tokenExpired() {
-        return new ResponseErrorHandler<>(401, "", false, 102, "Authorization failed",
+    public JsonErrorResponses tokenExpired() {
+        return new JsonErrorResponses<>(401, "", false, 102, "Authorization failed",
                 "Token has expired", Constants.URL);
+    }
+
+    @RequestMapping(method = RequestMethod.GET,
+    value = "/token-not-valid")
+    public JsonErrorResponses tokenNotValid() {
+        return new JsonErrorResponses<>(401, "", false, 112, "Authorization failed",
+                "Token is not valid", Constants.URL);
     }
 
 //    @GetMapping(path = "/getTicket",
