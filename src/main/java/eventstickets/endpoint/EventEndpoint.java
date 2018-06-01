@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,7 +26,11 @@ public class EventEndpoint {
             consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE,
                     MediaType.APPLICATION_JSON_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonErrorResponses createEventAndTickets(Event event) {
+    public JsonErrorResponses createEventAndTickets(Event event, HttpServletRequest httpServletRequest) {
+        if (checkPermissions(httpServletRequest)) {
+            return new JsonErrorResponses<>(HttpStatus.NOT_FOUND.value(), "", false, 104,
+                    "Permission denied", "Only admin can do this action", Constants.URL);
+        }
         eventService.createEvent(event);
         eventService.addTickets(event);
         return new JsonErrorResponses<>(HttpStatus.OK.value(), "", true, 100,
@@ -38,7 +43,7 @@ public class EventEndpoint {
             consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE,
                     MediaType.APPLICATION_JSON_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonErrorResponses updateEventStatus(@PathVariable long eventid, @RequestParam String status) {
+    public JsonErrorResponses updateEventStatus(@PathVariable long eventid, @RequestParam String status, HttpServletRequest httpServletRequest) {
         Event event = eventService.getEvent(eventid);
         if (event != null) {
             event.setStatus(status);
@@ -67,7 +72,7 @@ public class EventEndpoint {
     public JsonErrorResponses showEventInfo(@PathVariable long eventid) throws JsonProcessingException {
         Event event = eventService.getEvent(eventid);
         if (event == null) {
-            return new JsonErrorResponses<>(HttpStatus.NOT_FOUND.value(), "", false,  101,
+            return new JsonErrorResponses<>(HttpStatus.NOT_FOUND.value(), new Event(), false,  101,
                     "No such event", "Event with id " + eventid + " doesn't exist", Constants.URL);
         }
         return new JsonErrorResponses<>(HttpStatus.OK.value(), event, true, 0,
@@ -103,7 +108,7 @@ public class EventEndpoint {
         //TODO tylko on sam moze zobaczyc swoje eventy?
         List<Event> userEvents = eventService.showUserEvents(userid);
         if (userEvents == null) {
-            return new JsonErrorResponses<>(404, "", false, 108, "No events",
+            return new JsonErrorResponses<>(404, new ArrayList<Event>(), false, 108, "No events",
                     "This user doesn't have eny events", Constants.URL);
         }
         return new JsonErrorResponses<>(200, userEvents, true, 100, "User events",
@@ -115,6 +120,12 @@ public class EventEndpoint {
             value = "/{eventid}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonErrorResponses cancelEvent(@PathVariable long eventid, HttpServletRequest httpServletRequest) {
+
+        if (checkPermissions(httpServletRequest)) {
+            return new JsonErrorResponses<>(HttpStatus.NOT_FOUND.value(), "", false, 104,
+                    "Permission denied", "Only admin can do this action", Constants.URL);
+        }
+
         Event event = eventService.getEvent(eventid);
         if (event == null) {
             return new JsonErrorResponses<>(HttpStatus.NOT_FOUND.value(), "", false,  101,
@@ -129,7 +140,12 @@ public class EventEndpoint {
             return new JsonErrorResponses<>(200, "", true, 100, "Event cancelled",
                     "Event " + eventid + " + has been cancelled", Constants.URL);
         }
-        return new JsonErrorResponses<>(400, "", false, 100, "", "", Constants.URL);//TODO
+        return new JsonErrorResponses<>(400, "", false, 113, "Connection problem",
+                "Problem with connecting to other microservice", Constants.URL);
+    }
+
+    private boolean checkPermissions(HttpServletRequest httpServletRequest) {
+        return ((int) httpServletRequest.getAttribute(Constants.TOKEN_PAYLOAD_PERMISSION)) != Constants.ADMIN_PERM;
     }
 
     //FU12
@@ -139,7 +155,7 @@ public class EventEndpoint {
     public JsonErrorResponses showAvailableSeatsNumber(@PathVariable long eventid) {
         Event event = eventService.getEvent(eventid);
         if (event == null) {
-            return new JsonErrorResponses<>(HttpStatus.NOT_FOUND.value(), "", false,  101,
+            return new JsonErrorResponses<>(HttpStatus.NOT_FOUND.value(), 0, false,  101,
                     "No such event", "Event with id " + eventid + " doesn't exist", Constants.URL);
         }
         int occupiedSeats = event.getPremiumTicketsNumber() + event.getRegularTicketsNumber();
@@ -160,6 +176,13 @@ public class EventEndpoint {
     public JsonErrorResponses tokenNotValid() {
         return new JsonErrorResponses<>(401, "", false, 112, "Authorization failed",
                 "Token is not valid", Constants.URL);
+    }
+
+    @RequestMapping(method = RequestMethod.GET,
+    value = "token-needed")
+    public JsonErrorResponses tokenNeeded() {
+        return new JsonErrorResponses<>(401, "", false, 114, "Authorization failed",
+                "There is no token in your request", Constants.URL);
     }
 
 //    @GetMapping(path = "/getTicket",

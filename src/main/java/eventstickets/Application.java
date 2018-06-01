@@ -83,8 +83,21 @@ public class Application implements Filter {
 
         //authorization
         final String authHeader = request.getHeader("authorization");
-        if (authHeader != null) {
+        String pathToRequest = request.getServletPath();
+
+        //To Filip microsevice, swagger
+        if (pathToRequest.startsWith("/tickets/status") || pathToRequest.contains("swagger") || pathToRequest.startsWith("/v2")) {
+            chain.doFilter(req, res);
+            return;
+        } else {
+            if (authHeader == null) {
+                request.getRequestDispatcher("/events/token-needed").forward(request, response);
+                chain.doFilter(req, res);
+                return;
+            }
+
             final String token = authHeader.substring(7);
+
 //            final String token2[] = token.split("\\.");
 //            final String message = token2[1];
 //            final String signature = token2[1];

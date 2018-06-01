@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -28,7 +29,7 @@ public class TicketEndpoint {
             return new JsonErrorResponses<>(200, availableTickets, true, 100, "Available tickets",
                     "Available tickets for event " + eventid, Constants.URL);
         }
-        return new JsonErrorResponses<>(HttpStatus.NOT_FOUND.value(), "", false, 101,
+        return new JsonErrorResponses<>(HttpStatus.NOT_FOUND.value(), new ArrayList<Ticket>(), false, 101,
                 "No such event", "Event with id " + eventid + " doesn't exist", Constants.URL);
     }
 
@@ -74,7 +75,7 @@ public class TicketEndpoint {
             return new JsonErrorResponses<>(200, tickets, true, 100, "Tickets",
                     "Tickets for event " + eventid, Constants.URL);
         }
-        return new JsonErrorResponses<>(HttpStatus.NOT_FOUND.value(), "", false, 101,
+        return new JsonErrorResponses<>(HttpStatus.NOT_FOUND.value(), new ArrayList<Ticket>(), false, 101,
                 "No such event", "Event with id " + eventid + " doesn't exist", Constants.URL);
     }
 

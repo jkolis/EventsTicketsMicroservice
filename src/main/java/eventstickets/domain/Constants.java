@@ -18,4 +18,5 @@ public class Constants {
     public static final String TOKEN_PAYLOAD_PERMISSION = "permissionId";
     public static final String TOKEN_PAYLOAD_USER = "userId";
     public static final String URL = "http://";
+    public static final int ADMIN_PERM = 1;
 }

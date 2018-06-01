@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Table(name="event")
+@Table(name = "event")
 public class Event {
 
     @Id
@@ -24,6 +24,8 @@ public class Event {
     private String organizer;
     private int resignationPeriod; //w dniach
     private String status;
+    private int columns;
+    private int rows;
 
 
     public long getId() {
@@ -112,6 +114,22 @@ public class Event {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getColumns() {
+        return columns;
+    }
+
+    public void setColumns(int columns) {
+        this.columns = columns;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public void setRows(int rows) {
+        this.rows = rows;
     }
 }
 
