@@ -79,6 +79,9 @@ public class Application implements Filter {
 //        response.setHeader("Acess-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT");
         response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "authorization, content-type, xsrf-token");
+        response.addHeader("Access-Control-Expose-Headers", "xsrf-token");
+
 //        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, Authorization");
 
         //authorization
@@ -92,7 +95,7 @@ public class Application implements Filter {
         } else {
             if (authHeader == null) {
                 request.getRequestDispatcher("/events/token-needed").forward(request, response);
-                chain.doFilter(req, res);
+//                chain.doFilter(req, res);
                 return;
             }
 
@@ -121,6 +124,7 @@ public class Application implements Filter {
 
                 if (!localDateTime.isBefore(dt)) {
                     request.getRequestDispatcher("/events/token-expired").forward(request, response);
+                    return;
                 }
 
                 request.setAttribute(Constants.TOKEN_PAYLOAD_EXP_DATE, expDate);
@@ -130,6 +134,9 @@ public class Application implements Filter {
             } catch (final io.jsonwebtoken.SignatureException e) {
 //                throw new ServletException(e.getMessage());
                 request.getRequestDispatcher("/events/token-not-valid").forward(request, response);
+            } catch (Exception e) {
+                request.getRequestDispatcher("/events/token-not-valid").forward(request, response);
+
             }
         }
 

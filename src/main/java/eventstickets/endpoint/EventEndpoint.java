@@ -164,21 +164,21 @@ public class EventEndpoint {
                 "available seats in event: " + eventid, Constants.URL);
     }
 
-    @RequestMapping(method = RequestMethod.GET,
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE},
     value = "/token-expired")
     public JsonErrorResponses tokenExpired() {
         return new JsonErrorResponses<>(401, "", false, 102, "Authorization failed",
                 "Token has expired", Constants.URL);
     }
 
-    @RequestMapping(method = RequestMethod.GET,
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE},
     value = "/token-not-valid")
     public JsonErrorResponses tokenNotValid() {
         return new JsonErrorResponses<>(401, "", false, 112, "Authorization failed",
                 "Token is not valid", Constants.URL);
     }
 
-    @RequestMapping(method = RequestMethod.GET,
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE},
     value = "token-needed")
     public JsonErrorResponses tokenNeeded() {
         return new JsonErrorResponses<>(401, "", false, 114, "Authorization failed",
